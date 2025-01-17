@@ -27,7 +27,7 @@ This should not be necessary for firefox users.
 
 Once you have added the userscript to your extension of choice and enabled it, you have everything you need (do note the caveat about the developer setting on chrome above).
 
-Each time you open Roll20, you should see an extra bit of ui under the chat box labelled 'Enable rolls from Demiplane'.
+Each time you open Roll20, you should see an extra bit of ui under the chat box labelled 'Enable rolls from Forge Steek'.
 This checkbox defaults to off whenever you open a new Roll20 session to prevent you from making rolls accidentally.
 
 If you check the checkbox, any rolls made from any Forge Steel character sheet open in any of your browser tabs will be "funneled" to Roll20 and appear in the Roll20 chat. Keep in mind you must have both Roll20 and Forge Steel open in the same browser for this to work.
