@@ -6,6 +6,7 @@ Note that this tool does not use the Roll20 api and so should not require you to
 This tool is also compatible with the Discord Activity for Roll20.
 
 I am not connected to the people building Forge Steel, their repository can be found here: https://github.com/andyaiken/forgesteel
+
 And the builder itself can be found here: https://andyaiken.github.io/forgesteel/#/
 
 ## Overview
