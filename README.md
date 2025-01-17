@@ -15,7 +15,7 @@ Once you have one of those extensions, you can enable it by clicking the install
 
 https://greasyfork.org/en/scripts/524075-forgesteel-2-roll20
 
-When enabled, it creates a communication layer between Forge Steel and Roll20, allowing rolls made in your Forge Steel character sheet to automatically appear in Roll20 (with the same roll result that shows in Demiplane).
+When enabled, it creates a communication layer between Forge Steel and Roll20, allowing rolls made in your Forge Steel character sheet to automatically appear in Roll20 (with the same roll result that shows in Forge Steel).
 
 Note, if you are on Google Chrome, you will need to turn on the developer mode extension setting for Tampermonkey to work properly, see the instructions here:
 
