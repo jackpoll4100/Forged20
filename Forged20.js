@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         ForgeSteel 2 Roll20
+// @name         Forged20
 // @namespace    jackpoll4100
-// @version      1.0
+// @version      1.1
 // @description  Allows rolling from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
@@ -75,7 +75,10 @@
           rollSelector: '.total > div.ant-statistic-content > span > span',
           rollTitles: ['.modal-content .characteristic-modal > div.ant-statistic > div.ant-statistic-title', '.modal-content .ability-panel > div.header-text-panel > div'],
           characterSelector: '.hero-main-column > div.header-text-panel > div',
-          rollButton: ''
+          rollButton: '.die-roll-panel > .ant-btn',
+          effectsSelector: '.ant-drawer .power-roll-row .effect',
+          criticalSuccess: '.ant-alert-success',
+          tierAlert: '.ant-alert-warning .ant-alert-message'
       };
 
       function rollWatcher(){
@@ -87,8 +90,23 @@
               rollTitle = document.querySelector(selector)?.innerHTML ? document.querySelector(selector).innerHTML : rollTitle;
           });
 
+          const tierAlert = document.querySelector(classMap.tierAlert);
+          let modifierText = '';
+          let rollTier = roll < 12 ? 1 : roll < 17 ? 2 : 3;
+          if (tierAlert?.innerHTML?.includes('down') && rollTier > 1){
+              rollTier --;
+              modifierText = '(Tier was decreased by a Double Bane)';
+          }
+          else if (tierAlert?.innerHTML?.includes('up') && rollTier < 3){
+              rollTier ++;
+              modifierText = '(Tier was increased by a Double Edge)';
+          }
+
+          const effects = document.querySelectorAll(classMap.effectsSelector);
+          const constructedEffect = effects.length === 3 ? `{{effect=${ effects[rollTier - 1].innerHTML } ${ modifierText }}}` : '';
+
           const charName = document.querySelector(classMap.characterSelector)?.innerHTML;
-          const constructedMessage = `&{template:default} {{name=${ charName ? `${ charName }` : '' }}} ${ rollTitle ? `{{type=${ rollTitle }}}` : '' } {{result=${ roll } ${ document.querySelector('.ant-alert-success') ? '(Critical Success)' : ''}}}`;
+          const constructedMessage = `&{template:default} {{name=${ charName ? `${ charName }` : '' }}} ${ rollTitle ? `{{type=${ rollTitle }}}` : '' } {{result=${ roll } ${ document.querySelector(classMap.criticalSuccess) ? '(Critical Success)' : ''}}} ${ constructedEffect }`;
           console.log('Sending message to roll20: ', constructedMessage);
           GM_sendMessage('forgesteel-pipe', `${ Math.random() }---` + constructedMessage);
       }
@@ -96,7 +114,7 @@
       const bodyTarget = document.querySelector('body');
       const config = { attributes: false, childList: true, subtree: true };
       const listenerSetup = ()=>{
-          const foundElement = document.querySelector('.die-roll-panel > .ant-btn');
+          const foundElement = document.querySelector(classMap.rollButton);
           if (foundElement && !foundElement.getAttribute('listener-applied')){
               foundElement.setAttribute('listener-applied', true);
               foundElement.addEventListener('click', ()=>{ setTimeout(rollWatcher, 100); });
