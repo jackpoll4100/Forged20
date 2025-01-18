@@ -1,4 +1,4 @@
-# Forgesteel 2 Roll20
+# Forged20
 A tool that enables rolls from Drawsteel character sheets built in the Forge Steel character builder to be rolled into Roll20.
 
 Note that this tool does not use the Roll20 api and so should not require you to be a Pro member to make use of it.
@@ -14,7 +14,7 @@ This is a ```UserScript```, meaning it needs to be used with a browser extension
 
 Once you have one of those extensions, you can enable it by clicking the install button on this page:
 
-https://greasyfork.org/en/scripts/524075-forgesteel-2-roll20
+https://greasyfork.org/en/scripts/524075-forged20
 
 When enabled, it creates a communication layer between Forge Steel and Roll20, allowing rolls made in your Forge Steel character sheet to automatically appear in Roll20 (with the same roll result that shows in Forge Steel).
 
@@ -32,3 +32,7 @@ Each time you open Roll20, you should see an extra bit of ui under the chat box 
 This checkbox defaults to off whenever you open a new Roll20 session to prevent you from making rolls accidentally.
 
 If you check the checkbox, any rolls made from any Forge Steel character sheet open in any of your browser tabs will be "funneled" to Roll20 and appear in the Roll20 chat. Keep in mind you must have both Roll20 and Forge Steel open in the same browser for this to work.
+
+## Changelog:
+
+1.1 - Added support for displaying the tier results in roll20 (and having the edges and banes modify those as well).
