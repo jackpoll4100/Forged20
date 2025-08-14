@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      1.1
+// @version      1.2
 // @description  Allows rolling from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
 // @match        https://app.roll20.net/*
 // @match        https://*.discordsays.com/*
-// @icon         https://raw.githubusercontent.com/jackpoll4100/Forgesteel2Roll20/refs/heads/main/DS%20logo.png
+// @icon         https://raw.githubusercontent.com/jackpoll4100/Forged20/refs/heads/main/DS%20logo.png
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addValueChangeListener
@@ -73,42 +73,63 @@
 
       let classMap = {
           rollSelector: '.total > div.ant-statistic-content > span > span',
-          rollTitles: ['.modal-content .characteristic-modal > div.ant-statistic > div.ant-statistic-title', '.modal-content .ability-panel > div.header-text-panel > div'],
-          characterSelector: '.hero-main-column > div.header-text-panel > div',
+          rollTitles: ['.roll-modal div.ant-statistic-title', '.modal-content .ability-panel > div.header-text-panel > div > div.header-text'],
           rollButton: '.die-roll-panel > .ant-btn',
           effectsSelector: '.ant-drawer .power-roll-row .effect',
           criticalSuccess: '.ant-alert-success',
           tierAlert: '.ant-alert-warning .ant-alert-message'
       };
 
+      function fetchCharacter(callback)
+      {
+          let request = window.indexedDB.open('localforage');
+          request.onsuccess = async function(event) {
+              let db = event.target.result;
+              let store = db.transaction(['keyvaluepairs'],'readwrite').objectStore('keyvaluepairs');
+              store.get('forgesteel-heroes').onsuccess = function (event) {
+                  console.log('Found the following characters: ', event.target.result);
+                  const urlTokens = window.location.href.split('/');
+                  let stopLooking = false;
+                  for (const character of event.target.result)
+                  {
+                      if (character.id == urlTokens[urlTokens.length - 1] && !stopLooking)
+                      {
+                          stopLooking = true;
+                          callback(character);
+                      }
+                  }
+              };
+          };
+      }
+
       function rollWatcher(){
+          fetchCharacter((character) => {
+              const roll = document.querySelector(classMap.rollSelector)?.innerHTML;
 
-          const roll = document.querySelector(classMap.rollSelector)?.innerHTML;
+              let rollTitle = '';
+              classMap.rollTitles.forEach((selector)=>{
+                  rollTitle = document.querySelector(selector)?.innerHTML ? document.querySelector(selector).innerHTML : rollTitle;
+              });
 
-          let rollTitle = '';
-          classMap.rollTitles.forEach((selector)=>{
-              rollTitle = document.querySelector(selector)?.innerHTML ? document.querySelector(selector).innerHTML : rollTitle;
+              const tierAlert = document.querySelector(classMap.tierAlert);
+              let modifierText = '';
+              let rollTier = roll < 12 ? 1 : roll < 17 ? 2 : 3;
+              if (tierAlert?.innerHTML?.includes('down') && rollTier > 1){
+                  rollTier --;
+                  modifierText = '(Tier was decreased by a Double Bane)';
+              }
+              else if (tierAlert?.innerHTML?.includes('up') && rollTier < 3){
+                  rollTier ++;
+                  modifierText = '(Tier was increased by a Double Edge)';
+              }
+
+              const effects = document.querySelectorAll(classMap.effectsSelector);
+              const constructedEffect = effects.length === 3 ? `{{effect=${ effects[rollTier - 1].innerHTML } ${ modifierText }}}` : '';
+
+              const constructedMessage = `&{template:default} {{name=${ character?.name ? `${ character.name }` : '' }}} ${ rollTitle ? `{{type=${ rollTitle }}}` : '' } {{result=${ roll } ${ document.querySelector(classMap.criticalSuccess) ? '(Critical Success)' : ''}}} ${ constructedEffect }`;
+              console.log('Sending message to roll20: ', constructedMessage);
+              GM_sendMessage('forgesteel-pipe', `${ Math.random() }---` + constructedMessage);
           });
-
-          const tierAlert = document.querySelector(classMap.tierAlert);
-          let modifierText = '';
-          let rollTier = roll < 12 ? 1 : roll < 17 ? 2 : 3;
-          if (tierAlert?.innerHTML?.includes('down') && rollTier > 1){
-              rollTier --;
-              modifierText = '(Tier was decreased by a Double Bane)';
-          }
-          else if (tierAlert?.innerHTML?.includes('up') && rollTier < 3){
-              rollTier ++;
-              modifierText = '(Tier was increased by a Double Edge)';
-          }
-
-          const effects = document.querySelectorAll(classMap.effectsSelector);
-          const constructedEffect = effects.length === 3 ? `{{effect=${ effects[rollTier - 1].innerHTML } ${ modifierText }}}` : '';
-
-          const charName = document.querySelector(classMap.characterSelector)?.innerHTML;
-          const constructedMessage = `&{template:default} {{name=${ charName ? `${ charName }` : '' }}} ${ rollTitle ? `{{type=${ rollTitle }}}` : '' } {{result=${ roll } ${ document.querySelector(classMap.criticalSuccess) ? '(Critical Success)' : ''}}} ${ constructedEffect }`;
-          console.log('Sending message to roll20: ', constructedMessage);
-          GM_sendMessage('forgesteel-pipe', `${ Math.random() }---` + constructedMessage);
       }
 
       const bodyTarget = document.querySelector('body');
