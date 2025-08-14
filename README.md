@@ -36,3 +36,4 @@ If you check the checkbox, any rolls made from any Forge Steel character sheet o
 ## Changelog:
 
 1.1 - Added support for displaying the tier results in roll20 (and having the edges and banes modify those as well).
+1.2 - Addressed some bugs introduced by changes in new version of Forgesteel.
