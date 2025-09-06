@@ -37,3 +37,4 @@ If you check the checkbox, any rolls made from any Forge Steel character sheet o
 
 1.1 - Added support for displaying the tier results in roll20 (and having the edges and banes modify those as well).
 1.2 - Addressed some bugs introduced by changes in new version of Forge Steel.
+1.3 - Much improved macros that have more complete information from the Forge Steel ability cards. Also added plumbing for Forge Steel -> Roll20 imports via the in development character sheet, will add more details on that once the character sheet is officially released.
