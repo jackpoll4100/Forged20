@@ -31,7 +31,7 @@
       let forgesteelSettingsTemplate =
           `<div id="forgesteelSettings" style="display: flex; flex-direction: row; justify-content: space-between;">
               <input type="checkbox" id="forgesteelEnabled" title="Enables rolling from your Forge Steel character sheet in another tab.">
-              <input id="autoCheckLabel" style="margin: 5px 5px 5px 5px; width: 90%" disabled value="Enable rolls from Forge Steel" type="text" title="Enables rolling from your Forge Steel character sheet in another tab.">
+              <input id="autoCheckLabel" style="margin: 5px 5px 5px 5px; width: 90%" disabled value="Enable Forged20" type="text" title="Enables rolling and sending abilities from your Forge Steel character sheet in another tab.">
            </div>`;
       function GM_onMessage(label, callback){
           GM_addValueChangeListener(label, function(){
