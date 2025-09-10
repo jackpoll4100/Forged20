@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      1.3
+// @version      2.0
 // @description  Allows rolling from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
@@ -15,6 +15,14 @@
 
 (function() {
   'use strict';
+  function loadDependency(filename) {
+      var fileref = document.createElement('script');
+      fileref.setAttribute("type", "text/javascript");
+      fileref.setAttribute("src", filename);
+      if (typeof fileref != "undefined"){
+          (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(fileref);
+      }
+  }
   if (!window.location.href.includes('forgesteel')){
       window.forgesteelEnabled = false;
       function forgesteelToggle(){
@@ -60,7 +68,7 @@
                   execImport(cleanedString);
               }
           }
-          else if (message.includes('template')){
+          else if (message.includes('template') || message.includes('data:image')){
               let cleanedString = message.split('---')[1];
               execMacro(cleanedString);
           }
@@ -130,7 +138,10 @@
           rollButton: '.die-roll-panel > .ant-btn',
           effectsSelector: '.ant-drawer .power-roll-row .effect',
           criticalSuccess: '.ant-alert-success',
-          tierAlert: '.ant-alert-warning .ant-alert-message'
+          tierAlert: '.ant-alert-warning .ant-alert-message',
+          modalSelectors: ['.modal-content .ability-section', '.modal-content .feature-modal', '.modal-content .roll-modal'],
+          hideOutputSelectors: ['.ant-collapse', '.ant-slider'],
+          modalOpen: ['.modal']
       };
 
       function fetchCharacter(callback)
@@ -160,6 +171,7 @@
               callback.apply(undefined, arguments[2]);
           });
       }
+
       GM_onMessage('roll20-pipe', function(message) {
           console.log('roll20 message received: ', message);
           if (message?.split?.('---')?.[1] === 'character please')
@@ -173,7 +185,53 @@
           }
       });
 
-      function rollWatcher(){
+      function rasterizeContent(event)
+      {
+          const cleanDOM = (el) =>
+          {
+              if (el.querySelector('[listener-applied="true"]')?.style?.display === "")
+              {
+                  el.querySelector('[listener-applied="true"]').style.display = 'none';
+              }
+              for (let s of classMap.hideOutputSelectors)
+              {
+                  for (let e of el.querySelectorAll(s))
+                  {
+                      e.style.display = 'none';
+                  }
+              }
+          };
+          for (let m of classMap.modalSelectors)
+          {
+              const element = event.target.closest(m) || document.querySelector(m);
+              if (element)
+              {
+                  const elCopy = element.cloneNode(true);
+                  elCopy.id = 'tmp-ability-copy';
+                  let padding = '';
+                  if (m.includes('feature-panel'))
+                  {
+                      padding = ' padding: 10px;';
+                  }
+                  elCopy.setAttribute('style', `font-size: 1.4rem !important; z-index: -1; position: absolute; width: 100%; ${ padding }`);
+                  elCopy.innerHTML += '<style>#tmp-ability-copy * { font-size: 1.4rem; } #tmp-ability-copy .pill { min-width: 60px; }</style>'
+                  cleanDOM(elCopy);
+                  element.parentNode.appendChild(elCopy);
+                  domtoimage.toJpeg(document.getElementById('tmp-ability-copy'), { style: { 'background-color': '#e6e6e6' } }).then((dataUrl) =>
+                  {
+                      document.getElementById('tmp-ability-copy').remove();
+                      GM_sendMessage('forgesteel-pipe', `${ Math.random() }---` + `[x](${ dataUrl }#.png)`);
+                  });
+                  return;
+              }
+          }
+      }
+
+      function rollWatcher(e){
+          rasterizeContent(e);
+          return;
+
+          // The photo rasterizing method makes the existing scraping code redundant, but keeping it here to refer to if needed.
           fetchCharacter((character) => {
               const roll = document.querySelector(classMap.rollSelector)?.innerHTML;
               const rawRoll = parseInt(document.querySelectorAll(classMap.rawDiceValuesSelector)?.[0]?.innerHTML || 0) + parseInt(document.querySelectorAll(classMap.rawDiceValuesSelector)?.[1]?.innerHTML || 0);
@@ -294,17 +352,62 @@
           });
       }
 
+      const sendButtonTemplate =
+            `
+            <style>
+            #roll20-send-button{
+                position: absolute;
+                right: 5px;
+                bottom: 5px;
+                border-radius: 8px;
+                border: 0px;
+                padding: 10px;
+                background-color: rgb(22,119,255);
+                color: white;
+                cursor: pointer;
+            }
+      	    #roll20-send-button:hover{
+                zoom:1.1;
+            }</style>
+            <div id="roll20-send-button">Send text to Roll20</div>
+            `;
+
       const bodyTarget = document.querySelector('body');
       const config = { attributes: false, childList: true, subtree: true };
       const listenerSetup = ()=>{
           const foundElement = document.querySelector(classMap.rollButton);
           if (foundElement && !foundElement.getAttribute('listener-applied')){
               foundElement.setAttribute('listener-applied', true);
-              foundElement.addEventListener('click', ()=>{ setTimeout(rollWatcher, 100); });
+              foundElement.addEventListener('click', (e)=>{ setTimeout(()=>{ rollWatcher(e) }, 100); });
+          }
+          const foundModal = document.querySelector(classMap.modalOpen);
+          if (foundModal && !foundModal.getAttribute('button-applied'))
+          {
+              foundModal.setAttribute('button-applied', true);
+              setTimeout(()=>
+              {
+                  let applyButton = false;
+                  for (let m of classMap.modalSelectors)
+                  {
+                      const element = document.querySelector(m);
+                      if (element)
+                      {
+                          applyButton = true;
+                      }
+                  }
+                  if (applyButton)
+                  {
+                      let template = document.createElement('div');
+                      template.innerHTML = sendButtonTemplate;
+                      foundModal.appendChild(template);
+                      document.getElementById('roll20-send-button').addEventListener('click', (e)=>{ rollWatcher(e); });
+                  }
+              }, 100);
           }
       };
       const observer = new MutationObserver(listenerSetup);
       observer.observe(bodyTarget, config);
+      loadDependency('https://cdn.jsdelivr.net/npm/dom-to-image-more@3.7.1/dist/dom-to-image-more.min.js');
   }
 
 })();
