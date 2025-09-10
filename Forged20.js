@@ -369,7 +369,7 @@
       	    #roll20-send-button:hover{
                 zoom:1.1;
             }</style>
-            <div id="roll20-send-button">Send text to Roll20</div>
+            <div id="roll20-send-button">Send to Roll20</div>
             `;
 
       const bodyTarget = document.querySelector('body');
