@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      2.2
+// @version      2.3
 // @description  Allows rolling and sending abilities from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
@@ -201,6 +201,22 @@
                   }
               }
           };
+          const recursiveFindBGColor = (e) =>
+          {
+              const targettedStyle = window.getComputedStyle(e);
+              const bg = targettedStyle.getPropertyValue('background-color');
+              const transparentList = ['transparent', 'rgba(0,0,0,0)', 'rgba(0, 0, 0, 0)', '#00000000'];
+              if (!transparentList.includes(bg) || !e.parentNode)
+              {
+                  if (!e.parentNode)
+                  {
+                      console.info('[Forged20] Found no non transparent parent element, defaulting to light mode...');
+                      return '#e6e6e6';
+                  }
+                  return bg
+              }
+              return recursiveFindBGColor(e.parentNode);
+          };
           for (let m of classMap.modalSelectors)
           {
               const element = event.target.closest(m) || document.querySelector(m);
@@ -217,7 +233,10 @@
                   elCopy.innerHTML += '<style>#tmp-ability-copy * { font-size: 20px; } #tmp-ability-copy .pill { min-width: 60px; }</style>';
                   cleanDOM(elCopy);
                   element.parentNode.appendChild(elCopy);
-                  domtoimage.toJpeg(document.getElementById('tmp-ability-copy'), { style: { 'background-color': '#e6e6e6' } }).then((dataUrl) =>
+                  const parentStyle = window.getComputedStyle(element.parentNode);
+                  const bg = recursiveFindBGColor(element);
+
+                  domtoimage.toJpeg(document.getElementById('tmp-ability-copy'), { style: { 'background-color': bg } }).then((dataUrl) =>
                   {
                       document.getElementById('tmp-ability-copy').remove();
                       GM_sendMessage('forgesteel-pipe', `${ Math.random() }---` + `[x](${ dataUrl }#.png)`);
