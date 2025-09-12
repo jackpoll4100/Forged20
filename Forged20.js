@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      2.0
+// @version      2.1
 // @description  Allows rolling from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
@@ -213,8 +213,8 @@
                   {
                       padding = ' padding: 10px;';
                   }
-                  elCopy.setAttribute('style', `font-size: 1.4rem !important; z-index: -1; position: absolute; width: 100%; ${ padding }`);
-                  elCopy.innerHTML += '<style>#tmp-ability-copy * { font-size: 1.4rem; } #tmp-ability-copy .pill { min-width: 60px; }</style>'
+                  elCopy.setAttribute('style', `font-size: 20px !important; z-index: -1; position: absolute; width: 400px; ${ padding }`);
+                  elCopy.innerHTML += '<style>#tmp-ability-copy * { font-size: 20px; } #tmp-ability-copy .pill { min-width: 60px; }</style>';
                   cleanDOM(elCopy);
                   element.parentNode.appendChild(elCopy);
                   domtoimage.toJpeg(document.getElementById('tmp-ability-copy'), { style: { 'background-color': '#e6e6e6' } }).then((dataUrl) =>
