@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      2.1
-// @description  Allows rolling from forge steel character sheets into roll20.
+// @version      2.2
+// @description  Allows rolling and sending abilities from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
 // @match        https://app.roll20.net/*
