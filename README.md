@@ -55,3 +55,5 @@ Also, if you are using the Community Drawsteel character sheet for Roll20, you w
 1.3 - Much improved macros that have more complete information from the Forge Steel ability cards. Also added plumbing for Forge Steel -> Roll20 imports via the in development character sheet, will add more details on that once the character sheet is officially released.
 
 2.0 - Changed the method of sending rolls so that they can preserve the look and feel of forgesteel rolls and cover more use cases. Also, added sending of any ability or feature to Roll20 from the side panel.
+
+2.1 - Made some improvements to readability, specifically switched to absolute units rather than relative units to make clarity less display dependent.
