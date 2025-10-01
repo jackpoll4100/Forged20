@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Forged20
 // @namespace    jackpoll4100
-// @version      2.3
-// @description  Allows rolling and sending abilities from forge steel character sheets into roll20.
+// @version      2.4
+// @description  Allows rolling from forge steel character sheets into roll20.
 // @author       jackpoll4100
 // @match        https://andyaiken.github.io/forgesteel*
 // @match        https://app.roll20.net/*
@@ -136,6 +136,7 @@
           flavorSelector: '.ability-modal .ability-description-text > p',
           tiersSelector: '.ability-modal .ability-panel div.power-roll-panel p',
           rollButton: '.die-roll-panel > .ant-btn',
+          resourceRollButton: '.modal > .modal-content > .ant-space > .ant-space-item > .ant-btn',
           effectsSelector: '.ant-drawer .power-roll-row .effect',
           criticalSuccess: '.ant-alert-success',
           tierAlert: '.ant-alert-warning .ant-alert-message',
@@ -394,6 +395,16 @@
       const bodyTarget = document.querySelector('body');
       const config = { attributes: false, childList: true, subtree: true };
       const listenerSetup = ()=>{
+          const resourceButton = document.querySelector(classMap.resourceRollButton);
+          if (resourceButton && resourceButton.firstChild?.innerHTML == 'Roll')
+          {
+              if (resourceButton && !resourceButton.getAttribute('listener-applied')){
+                  resourceButton.setAttribute('listener-applied', true);
+                  resourceButton.parentElement?.parentElement?.classList?.add('roll-modal');
+                  resourceButton.addEventListener('click', (e)=>{ setTimeout(()=>{ rollWatcher(e) }, 100); });
+              }
+              return;
+          }
           const foundElement = document.querySelector(classMap.rollButton);
           if (foundElement && !foundElement.getAttribute('listener-applied')){
               foundElement.setAttribute('listener-applied', true);
