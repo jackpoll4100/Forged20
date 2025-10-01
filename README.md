@@ -59,3 +59,5 @@ Also, if you are using the Community Drawsteel character sheet for Roll20, you w
 2.1/2 - Made some improvements to readability, specifically switched to absolute units rather than relative units to make clarity less display dependent.
 
 2.3 - Fix for styling issues on dark mode browsers.
+
+2.4 - Made heroic resource rolls also send to Roll20.
