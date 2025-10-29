@@ -22,7 +22,7 @@ Note, if you are on Google Chrome (as well as Brave and Opera), you will need to
 
 https://www.tampermonkey.net/faq.php#Q209
 
-This should not be necessary for Firefox users.
+I have heard from some people that this was necessary on Firefox as well despite Firefox supporting manifest V2 (deprecated by Chrome). If this is the case, I assume it is due to some user script extensions voluntarily updating to Manifest v3 where the above step is necessary. So bear in mind this may or may not be necessary depending on which extension you use for installing userscripts in Firefox.
 
 ## Getting Started
 
