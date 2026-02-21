@@ -18,7 +18,7 @@ https://greasyfork.org/en/scripts/524075-forged20
 
 When enabled, it creates a communication layer between Forge Steel and Roll20, allowing rolls and abilities/features made in your Forge Steel character sheet to be sent to Roll20 (with the same roll result that shows in Forge Steel).
 
-Note, if you are on Google Chrome, Brave, and Opera (and possibly Firefox now too, see note below), you will need to turn on the developer mode extension setting for Tampermonkey to work properly, see the instructions here:
+Note, if you are on Google Chrome, Brave, and Opera (and possibly Firefox now too, see note below), you will need to turn on the developer mode extension setting for Tampermonkey to work properly, see the instructions here (Note, you may also need to set the "Allow Userscripts" toggle for the extension as well, this is also covered in the page linked below):
 
 https://www.tampermonkey.net/faq.php#Q209
 
